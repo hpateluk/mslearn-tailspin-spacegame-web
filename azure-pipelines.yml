@@ -52,13 +52,16 @@ steps:
     custom: tool
     arguments: 'restore'
     
+
+
 - task: DotNetCoreCLI@2
   displayName: 'Run unit tests - $(buildConfiguration)'
   inputs:
     command: 'test'
-    arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourceDirectory)/TestResults/Coverage/'
+    arguments: '-o --no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourceDirectory)/TestResults/Coverage/'
     publishTestResults: true
     projects: '**/*.Tests.csproj'
+    modifyOutputPath: true
 
 - task: DotNetCoreCLI@2
   displayName: 'Create code coverage report'
@@ -66,6 +69,8 @@ steps:
     command: custom
     custom: tool
     arguments: 'run reportgenerator -reports:$(Build.SourceDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourceDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines'
+
+
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage report'
